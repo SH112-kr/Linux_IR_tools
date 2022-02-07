@@ -9,13 +9,13 @@ def accouts_parse():
     os.system("mkdir /basic_parse/accounts") #디렉토리 생성
     os.system("cat /etc/group > /basic_parse/accounts/group") #group 정보 수집
     history_path = subprocess.check_output('find / -name ".bash_history"',shell = True) #-bash_history 존재 확인
-    os.system("cat var/log/syslog > /basic_parse/accounts/syslog") #syslog 수집
-    print(history_path)
+    os.system("cat /var/log/syslog > /basic_parse/accounts/syslog") #syslog 수집
+    os.system("cat /var/log/auth.log > /basic_parse/accounts/auth_log")
+    history_path = history_path.decode('utf-8')
     history_paths = history_path.split("\n")
     for num,historys in enumerate(history_paths):
-        print(type(historys))
         if historys != "":
-	        os.system("cat "+historys+" >  /basic_parse/accounts/history"+str(num))
+            os.system("cat "+historys+" >  /basic_parse/accounts/history"+str(num))
     os.system("last > /basic_parse/accounts/last")
     os.system('lastlog > /basic_parse/accounts/lastlog')
     os.system("cat /etc/passwd > /basic_parse/accounts/passwd")
@@ -27,9 +27,9 @@ def accouts_parse():
 def network_parse():
     os.system("mkdir /basic_parse/network")
     os.system("ifconfig > /basic_parse/network/ifconfig")
-    os.system("arp > /basic_parse/network/arp")
+    os.system("arp -an > /basic_parse/network/arp")
     os.system("lsof > /basic_parse/network/lsof")
-    os.system("netstat -an > /basic_parse/network/netstat_an")
+    os.system("netstat -anpt > /basic_parse/network/netstat_an")
     print("==network parming==")
 
 def osinfo_parse():
@@ -39,28 +39,36 @@ def osinfo_parse():
     os.system("hostname > /basic_parse/osinfo/hostname")
     os.system("ifconfig -a > /basic_parse/osinfo/ifconfig_a")
     os.system("uname -a > /basic_parse/osinfo/uname_a")
+    os.system("find / -printf '%T+\\t%p\\n' | sort > /basic_parse/osinfo/create_file_time" )
+    os.system("find / -user root -perm -4000 -print > /basic_parse/osinfo/Root_UID") 
+    os.system("find / -user root -perm -2000 -print > /basic_parse/osinfo/Root_GID")
     print("==osinfo parming==")
 
 def process_pasre():
     os.system("mkdir /basic_parse/process")
-    os.system("cat /etc/crontab > /basic_parse/process/crontab")
+    os.system("crontab -l > /basic_parse/process/crontab")
     os.system("ipcs -u > /basic_parse/process/ipcs_u")
     os.system("lsmod > /basic_parse/process/lsmod")
     os.system("ps -eaf > /basic_parse/process/ps_eaf")
+    os.system("ps -auxf > /basic_parse/process/ps_auxf")
+    os.system("ps -aux > /basic_parse/process/ps_aux")
     os.system("pstree -a > /basic_parse/process/pstree_a")
+    os.system("apt list --installed > /basic_parse/process/apt_list")
     print("== process parming ==")
 
 def weblog_parse():
     os.system("mkdir /basic_parse/weblog")
     access_path = subprocess.check_output('find / -name "access.log"',shell = True)
+    access_path = access_path.decode('utf-8')
     access_path = access_path.split("\n")
-    for i,access_paths in enumerate(access_path):
-   	 os.system("cat "+access_paths+" > /basic_parse/weblog/access_log"+str(i))
+    os.system("cat "+access_path[0]+" > /basic_parse/weblog/access_log")
     print("== weblog parming ==")
+
 
 
 def RecoverBash():  #RECOVER 파일
     passwd = subprocess.check_output("cat /etc/passwd",shell=True)
+    passwd = passwd.decode('utf-8')
     lines = passwd.split("\n")
     user_list = []
     for line in lines:
@@ -74,19 +82,16 @@ def RecoverBash():  #RECOVER 파일
 
     os.system("sudo apt-get install extundelete")
     #path = "/dev/sdb1"
-    paths = subprocess.check_output("df -T",shell=True)
+    paths = subprocess.check_output("df -T | awk '{print $1}'| awk '/dev\/sd/'",shell=True) # df-T 리스트 
+    paths = paths.decode('utf-8')
     paths = paths.split("\n")
-    SUsers = []
+    
+
 
     for path in paths:
-        if "/home/{}".format(user) in path:
-            SUsers.append(path.split()[0])
-    print(SUsers)
-    print(type(path))
-    for s in SUsers:
-        ext = ("yes | sudo extundelete {} --restore-all").format(s)
+        ext = ("yes | sudo extundelete {} --restore-all").format(path)
         os.system(ext)
-        os.system("tar -zcf REC.tar RECOVERED_FILES")
+    os.system("tar -zcf /basic_parse/REC.tar RECOVERED_FILES")
 
 
 accouts_parse()
@@ -94,5 +99,7 @@ network_parse()
 osinfo_parse()
 process_pasre()
 weblog_parse()
+RecoverBash()
 os.system("tar -cvf /B_parse.tar /basic_parse")
 print("COMPLETE!!!!")
+

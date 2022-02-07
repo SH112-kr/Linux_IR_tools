@@ -1,10 +1,51 @@
 import os
+from re import sub
 import subprocess
 
 def unzip_parse():
     parse_tar_path = subprocess.check_output('find / -name "B_parse.tar"',shell = True)
     os.system("tar -xvf "+parse_tar_path)
     print("unzip_finish")
+
+
+'''커맨드 문자열 처리 함수'''
+def String_Cook(row_string): 
+    row_string = row_string.decode('utf-8')
+    cook_string = row_string.split("\n")
+    return cook_string
+
+
+class System_Info():
+    passwd_result_user = []
+    passwd_result_UID = []
+    passwd_result_GID = []
+    passwd_result_homedir = []
+    def passwd():
+        passwd_result = subprocess.check_output('cat /basic_parse/accounts/passwd | grep /bin/bash',shell = True)
+        passwd_result = String_Cook(passwd_result)
+        passwd_result.remove('')
+        for i in passwd_result:
+            System_Info.passwd_result_user.append(i.split(":")[0])
+            System_Info.passwd_result_UID.append(i.split(":")[2])
+            System_Info.passwd_result_GID.append(i.split(":")[3])
+            System_Info.passwd_result_homedir.append(i.split(":")[5])
+        #print(System_Info.passwd_result_user)
+        #print(System_Info.passwd_result_UID)
+        #print(System_Info.passwd_result_GID)
+        #print(System_Info.passwd_result_homedir)
+
+
+
+    def lastlog():
+        user_factor = '|'.join(System_Info.passwd_result_user)
+        lastlog_result = subprocess.check_output('cat /basic_parse/accounts/lastlog | grep -E '+'\''+user_factor+'\'',shell = True)
+        lastlog_result = lastlog_result.decode('utf-8')
+        lastlog_result = lastlog_result.split('\n')
+        print(lastlog_result)
+
+System_Info.passwd()
+System_Info.lastlog()        
+        
 
 
 class accounts():

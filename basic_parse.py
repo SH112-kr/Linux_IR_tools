@@ -44,7 +44,7 @@ def osinfo_parse():
     os.system("find / -user root -perm -2000 -print > /basic_parse/osinfo/Root_GID")
     print("==osinfo parming==")
 
-def process_pasre():
+def process_pasre(): #
     os.system("mkdir /basic_parse/process")
     os.system("crontab -l > /basic_parse/process/crontab")
     os.system("ipcs -u > /basic_parse/process/ipcs_u")

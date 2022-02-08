@@ -1,19 +1,18 @@
 import os
-from re import sub
 import subprocess
+from tkinter.tix import Tree
+
+#os.system("mkdir /basic_parse")
 
 def unzip_parse():
     parse_tar_path = subprocess.check_output('find / -name "B_parse.tar"',shell = True)
     os.system("tar -xvf "+parse_tar_path)
     print("unzip_finish")
 
-
-'''커맨드 문자열 처리 함수'''
 def String_Cook(row_string): 
     row_string = row_string.decode('utf-8')
     cook_string = row_string.split("\n")
     return cook_string
-
 
 class System_Info():
     passwd_result_user = []
@@ -39,13 +38,56 @@ class System_Info():
     def lastlog():
         user_factor = '|'.join(System_Info.passwd_result_user)
         lastlog_result = subprocess.check_output('cat /basic_parse/accounts/lastlog | grep -E '+'\''+user_factor+'\'',shell = True)
-        lastlog_result = lastlog_result.decode('utf-8')
-        lastlog_result = lastlog_result.split('\n')
+        lastlog_result = String_Cook(lastlog_result)
         print(lastlog_result)
 
+
+    def netstat_anpt():
+        Cook_netstat_box = []
+        netstat_anpt_result = subprocess.check_output('cat /basic_parse/network/netstat_an',shell = True)
+        netstat_anpt_result = String_Cook(netstat_anpt_result)
+        del netstat_anpt_result[0:2]
+        del netstat_anpt_result[-1]
+        for i in netstat_anpt_result:
+            result = i.split(' ')
+            while '' in result:
+                result.remove("")
+            if result[0] == 'tcp':
+                Local_info = result[3].split(":")
+                Fore_info = result[4].split(":")
+                result[3] = Local_info
+                result[4] = Fore_info
+                Cook_netstat_box.append(result[0:6])
+            elif result[0] == 'tcp6':
+                pass
+        for b in Cook_netstat_box:
+            print(b)
+
+
+    def simple_info_data(): #System date, hostname, user_a 정보 출력
+        date_info = subprocess.check_output("cat /basic_parse/osifno/date",shell = True)
+        hostname_info = subprocess.check_output('cat /basic_parse/osifno/hostname',shell = True)
+        uname_info = subprocess.check_output('cat /basic_parse/osifno/uname_a',shell = True)
+        return date_info, hostname_info, uname_info
+
+    def crontab():
+
+        crontab_result = subprocess.check_output('cat /basic_parse/process/crontab',shell = True)
+        crontab_result = String_Cook(crontab_result)
+        print(crontab_result)
+        ClontabRemark = []
+        ClontabCommand = []
+        for word in crontab_result:
+            if word.startswith('#'):
+                ClontabRemark.append(word) #ClonTab 주석 저장 
+        else:
+            ClontabCommand.append(word) #ClonTab 명령어 저장
+        while '' in ClontabCommand:
+            ClontabCommand.remove('')
+
 System_Info.passwd()
-System_Info.lastlog()        
-        
+System_Info.lastlog()
+System_Info.netstat_anpt()        
 
 
 class accounts():
@@ -87,4 +129,3 @@ crontab
 ...
 """
     
-

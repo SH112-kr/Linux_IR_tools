@@ -81,7 +81,7 @@ def RecoverBash():  #RECOVER 파일
         getBhCmd = "cat /home/{}/.bash_history".format(user)
         print(subprocess.call(getBhCmd, shell=True))
 
-    os.system("sudo apt-get install extundelete")
+    os.system("yes |sudo apt-get install extundelete")
     #path = "/dev/sdb1"
     paths = subprocess.check_output("df -T | awk '{print $1}'| awk '/dev\/sd/'",shell=True) # df-T 리스트 
     paths = paths.decode('utf-8')

@@ -29,6 +29,7 @@ def network_parse():
     os.system("ifconfig > /basic_parse/network/ifconfig")
     os.system("arp -an > /basic_parse/network/arp")
     os.system("lsof > /basic_parse/network/lsof")
+    os.system("hostname -I > /basic_parse/network/HostName_I")
     os.system("netstat -anpt > /basic_parse/network/netstat_an")
     print("==network parming==")
 

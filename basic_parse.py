@@ -97,7 +97,7 @@ def RecoverBash():  #RECOVER 파일
 
 def Check_RootKit():
     os.system("yes |sudo apt-get install rkhunter")
-    os.system("sudo rkhunter -c-sk")
+    os.system("sudo rkhunter -c -sk")
     os.system("tar -cvf /basic_parse/var_log /var/log")
 
 accouts_parse()

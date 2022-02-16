@@ -25,15 +25,16 @@ class System_Info():
         passwd_result = subprocess.check_output('cat /basic_parse/accounts/passwd | grep /bin/bash',shell = True)
         passwd_result = String_Cook(passwd_result)
         passwd_result.remove('')
+        print(passwd_result)
         for i in passwd_result:
-            System_Info.passwd_result_user.append(i.split(":")[0])
+            System_Info.passwd_result_user.append(i.split(":")[0]) #
             System_Info.passwd_result_UID.append(i.split(":")[2])
             System_Info.passwd_result_GID.append(i.split(":")[3])
             System_Info.passwd_result_homedir.append(i.split(":")[5])
-        #print(System_Info.passwd_result_user)
-        #print(System_Info.passwd_result_UID)
-        #print(System_Info.passwd_result_GID)
-        #print(System_Info.passwd_result_homedir)
+        print(System_Info.passwd_result_user)
+        print(System_Info.passwd_result_UID)
+        print(System_Info.passwd_result_GID)
+        print(System_Info.passwd_result_homedir)
         return System_Info.passwd_result_user,System_Info.passwd_result_UID,System_Info.passwd_result_GID,System_Info.passwd_result_homedir
 
 
@@ -105,7 +106,7 @@ def JsonSeverData():
     ClontabCommand, ClontabRemark = System_Info.crontab()
     netstat_anpt = System_Info.netstat_anpt()
     lastlog_result = System_Info.lastlog()
-    passwd_result_user, passwd_result_UID, passwd_result_GID, passwd_result_homedir = System_Info.passwd()
+    #passwd_result_user, passwd_result_UID, passwd_result_GID, passwd_result_homedir = System_Info.passwd()
 
     return {"IP":HostName_I,
     "DATE":date_info,
@@ -115,13 +116,25 @@ def JsonSeverData():
     "netstat_anpt" : netstat_anpt,
     "lastlog_result" : lastlog_result,
     "user" : [
-        {'name' : passwd_result_user,
-        'UID' :passwd_result_UID, 
-        'GID' : passwd_result_GID, 
-        'home_dir':passwd_result_homedir}]
+        {'name' : System_Info.passwd_result_user,
+        'UID' :System_Info.passwd_result_UID, 
+        'GID' : System_Info.passwd_result_GID, 
+        'home_dir':System_Info.passwd_result_homedir}]
     #"user_UID" : passwd_result_UID,
     #"user_GId" : passwd_result_GID,
     #"user_homedir" : passwd_result_homedir
     }
 
-print(JsonSeverData())
+
+date_info, hostname_info, uname_info, HostName_I = System_Info.simple_info_data() 
+ClontabCommand, ClontabRemark = System_Info.crontab()
+netstat_anpt = System_Info.netstat_anpt()
+lastlog_result = System_Info.lastlog()
+
+
+
+print("DATE : " + date_info)
+print("HostName: " + hostname_info)
+print('uname_ifno : '+ uname_info)
+print("IP : " + HostName_I)
+print()

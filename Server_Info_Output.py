@@ -79,6 +79,11 @@ class System_Info():
         return history_owner,history_command
 
 
+    def live_process():
+        process_list = subprocess.check_output('''cat /basic_parse/process/ps_aux | awk ' BEGIN { ORS = "";} { printf "\\\"user\\\": \\\"%s\\\", \\\"pid\\\": \\\"%s\\\", \\\"START\\\": \\\"%s\\\", \\\"TIME\\\": \\\"%s\\\", \\\"COMMAND\\\": \\\"%s\\\"\\n",$1, $2, $9, $10, $11} END { print "" }' ''',shell=True)
+        process_list = String_Cook(process_list)
+        process_list.remove('')
+        return process_list
     def netstat_anpt():
         Cook_netstat_box = []
         netstat_anpt_result = subprocess.check_output('cat /basic_parse/network/netstat_an',shell = True)
@@ -210,19 +215,22 @@ for i in netstat_anpt:
     elif Foreign_Address == False :
         print("Port : UnKnown Port")
 
-print("\nBash 계정 최근 기록")
+print("\n================================Bash 계정 최근 기록================================")
 for a in lastlog_result:
     print(a)
 
-print("Crontab 상태")
+print("================================Crontab 상태================================")
 print(ClontabCommand,"\n")
 
-print("History 로그")
+print("================================History 로그================================")
 history_name , history_command =System_Info.history()
 for e,j in enumerate(history_name):
     print("히스토리 계정 :"+ j)
     for i in history_command[e]:
         print(i)
 
-
+print("================================Live Process List================================")
+Live_Process = System_Info.live_process()
+for i in Live_Process:
+    print(i)
 

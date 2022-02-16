@@ -15,7 +15,10 @@ def accouts_parse():
     history_paths = history_path.split("\n")
     for num,historys in enumerate(history_paths):
         if historys != "":
-            os.system("cat "+historys+" >  /basic_parse/accounts/history"+str(num))
+            history_name = historys.split('/')
+            history_name2 = history_name[-2]
+            print(history_name2)
+            os.system("cat "+historys+" >  /basic_parse/accounts/history"+"_"+history_name2)
     os.system("last > /basic_parse/accounts/last")
     os.system('lastlog > /basic_parse/accounts/lastlog')
     os.system("cat /etc/passwd > /basic_parse/accounts/passwd")

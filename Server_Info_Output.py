@@ -150,6 +150,17 @@ def access_log_anal():
     access_log_data2.remove('')
     return access_log_data1, access_log_data2
 
+def Sys_log_anal():
+    Sys_log_data = subprocess.check_output("cat /basic_parse/accounts/syslog | grep CMD |grep -ow '(.*)'",shell = True)
+    Sys_log_data = String_Cook(Sys_log_data)
+    Sys_log_data.remove('')
+    return Sys_log_data
+
+def auth_log_anal():
+    auth_log_data = subprocess.check_output("cat /basic_parse/accounts/auth_log | grep -a COMMAND= | awk '{print $1,$2,$3,$6,$10,$12,$14}'",shell = True)
+    auth_log_data = String_Cook(auth_log_data)
+    auth_log_data.remove('')
+    return auth_log_data
 
 date_info, hostname_info, uname_info, HostName_I = System_Info.simple_info_data() 
 User_Name = System_Info.passwd_result_user,
@@ -227,3 +238,14 @@ for a in data1:
 print("Referer")
 for b in data2:
     print(b)
+
+
+print("================================Sys Log Data================================")
+syslog_data = Sys_log_anal()
+for c in syslog_data:
+    print(c)
+
+print("================================Auth Log Data================================")
+authlog_data = auth_log_anal()
+for d in authlog_data:
+    print(d)

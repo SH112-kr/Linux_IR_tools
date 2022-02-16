@@ -1,5 +1,7 @@
+import enum
 import os
 import subprocess
+
 
 
 #os.system("mkdir /basic_parse")
@@ -11,10 +13,24 @@ def unzip_parse():
 
 ''' byte to string'''
 def String_Cook(row_string): 
-    row_string = row_string.decode('utf-8')
+    row_string = row_string.decode('ascii')
     cook_string = row_string.split("\n")
     return cook_string
 
+port = []
+port_name = []
+with open("wellknownport.txt",'r')as f:
+    lines = f.readlines()
+    for line in lines:
+        split_line = line.split('  ')
+        split_line[2] = split_line[2].replace('\n','')
+        port.append(split_line[1])
+        port_name.append(split_line[2])
+
+
+
+
+    
 
 class System_Info():
     passwd_result_user = []
@@ -25,16 +41,16 @@ class System_Info():
         passwd_result = subprocess.check_output('cat /basic_parse/accounts/passwd | grep /bin/bash',shell = True)
         passwd_result = String_Cook(passwd_result)
         passwd_result.remove('')
-        print(passwd_result)
+        #print(passwd_result)
         for i in passwd_result:
             System_Info.passwd_result_user.append(i.split(":")[0]) #
             System_Info.passwd_result_UID.append(i.split(":")[2])
             System_Info.passwd_result_GID.append(i.split(":")[3])
             System_Info.passwd_result_homedir.append(i.split(":")[5])
-        print(System_Info.passwd_result_user)
-        print(System_Info.passwd_result_UID)
-        print(System_Info.passwd_result_GID)
-        print(System_Info.passwd_result_homedir)
+        #print(System_Info.passwd_result_user)
+        #print(System_Info.passwd_result_UID)
+        #print(System_Info.passwd_result_GID)
+        #print(System_Info.passwd_result_homedir)
         return System_Info.passwd_result_user,System_Info.passwd_result_UID,System_Info.passwd_result_GID,System_Info.passwd_result_homedir
 
 
@@ -87,13 +103,16 @@ class System_Info():
         #print(crontab_result)
         ClontabRemark = []
         ClontabCommand = []
+        print(crontab_result)
         for word in crontab_result:
             if word.startswith('#'):
                 ClontabRemark.append(word) #ClonTab 주석 저장 
-        else:
-            ClontabCommand.append(word) #ClonTab 명령어 저장
-        while '' in ClontabCommand:
-            ClontabCommand.remove('')
+            else:
+                ClontabCommand.append(word) #ClonTab 명령어 저장
+            while '' in ClontabCommand:
+                ClontabCommand.remove('')
+        print(ClontabCommand)
+        print(ClontabRemark)
         return ClontabCommand, ClontabRemark
 
 System_Info.passwd()
@@ -127,14 +146,60 @@ def JsonSeverData():
 
 
 date_info, hostname_info, uname_info, HostName_I = System_Info.simple_info_data() 
+User_Name = System_Info.passwd_result_user,
+User_UID = System_Info.passwd_result_UID, 
+User_GID = System_Info.passwd_result_GID, 
+User_HomeDir = System_Info.passwd_result_homedir
 ClontabCommand, ClontabRemark = System_Info.crontab()
 netstat_anpt = System_Info.netstat_anpt()
 lastlog_result = System_Info.lastlog()
 
 
+print("시간 : " + date_info)
+print("호스트 이름: " + hostname_info)
+print('시스템 정보 : '+ uname_info)
+print("IP 정보 : " + HostName_I)
 
-print("DATE : " + date_info)
-print("HostName: " + hostname_info)
-print('uname_ifno : '+ uname_info)
-print("IP : " + HostName_I)
-print()
+for a,e in enumerate(User_Name):
+    print("계정명 :",User_Name,'\n',"UID ,",User_UID,"\n","GID :",User_GID,"\n","홈디렉토리 :",User_HomeDir)
+
+print("\n시스템 네트워크 정보 ")
+
+for i in netstat_anpt:
+    Local_Address = False
+    Foreign_Address = False
+    print("=================="+i[5]+"=========================")
+    print("Local Address : " + i[3][0]+':'+i[3][1])
+    for a,e in enumerate(port):
+        if i[3][1] == e:  
+            print("Port :" ,port_name[a] )
+            Local_Address = True
+        #elif i[3][1] == '*':
+        #    print("Port : *" )
+    if i[3][1] == '*':
+        print("Port : *" )
+    elif Local_Address == False :
+        print("Port : UnKnown Port")
+        
+            
+
+    print("Foreign Address" + i[4][0]+':'+i[4][1])
+    for a,e in enumerate(port):
+        if i[4][1] == e:  
+            print("Port :" ,port_name[a] )
+        #elif i[4][1] == '*':
+        #    print("Port : *" )
+    if i[4][1] == '*':
+        print("Port : *" )
+    elif Foreign_Address == False :
+        print("Port : UnKnown Port")
+
+print("\nBash 계정 최근 기록")
+for a in lastlog_result:
+    print(a)
+
+print("Crontab 상태")
+print(ClontabCommand)
+
+print("History 로그")
+

@@ -12,7 +12,7 @@ def unzip_parse():
 
 ''' byte to string'''
 def String_Cook(row_string): 
-    row_string = row_string.decode('ascii')
+    row_string = row_string.decode('utf-8')
     cook_string = row_string.split("\n")
     return cook_string
 

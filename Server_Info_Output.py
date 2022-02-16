@@ -1,5 +1,6 @@
 import os
 import subprocess
+from tokenize import String
 
 
 
@@ -12,7 +13,7 @@ def unzip_parse():
 
 ''' byte to string'''
 def String_Cook(row_string): 
-    row_string = row_string.decode('utf-8')
+    row_string = row_string.decode('ascii')
     cook_string = row_string.split("\n")
     return cook_string
 
@@ -137,33 +138,17 @@ class System_Info():
         return ClontabCommand, ClontabRemark
 
 System_Info.passwd()
-System_Info.lastlog()
-System_Info.netstat_anpt()        
+#System_Info.lastlog()
+#System_Info.netstat_anpt()        
 
-dic1 = {}
-def JsonSeverData():
-    date_info, hostname_info, uname_info, HostName_I = System_Info.simple_info_data() 
-    ClontabCommand, ClontabRemark = System_Info.crontab()
-    netstat_anpt = System_Info.netstat_anpt()
-    lastlog_result = System_Info.lastlog()
-    #passwd_result_user, passwd_result_UID, passwd_result_GID, passwd_result_homedir = System_Info.passwd()
-
-    return {"IP":HostName_I,
-    "DATE":date_info,
-    "HostName":hostname_info,
-    "uname_ifno" : uname_info,
-    "ClontabCommand":ClontabCommand,
-    "netstat_anpt" : netstat_anpt,
-    "lastlog_result" : lastlog_result,
-    "user" : [
-        {'name' : System_Info.passwd_result_user,
-        'UID' :System_Info.passwd_result_UID, 
-        'GID' : System_Info.passwd_result_GID, 
-        'home_dir':System_Info.passwd_result_homedir}]
-    #"user_UID" : passwd_result_UID,
-    #"user_GId" : passwd_result_GID,
-    #"user_homedir" : passwd_result_homedir
-    }
+def access_log_anal():
+    access_log_data1 = subprocess.check_output("cat /basic_parse/weblog/access_log | awk '{print $7}' | sort | uniq -c",shell = True)
+    access_log_data1 = String_Cook(access_log_data1)
+    access_log_data1.remove('')
+    access_log_data2 = subprocess.check_output("cat /basic_parse/weblog/access_log | awk '{print $11}' | sort | uniq -c",shell = True)
+    access_log_data2 = String_Cook(access_log_data2)
+    access_log_data2.remove('')
+    return access_log_data1, access_log_data2
 
 
 date_info, hostname_info, uname_info, HostName_I = System_Info.simple_info_data() 
@@ -234,3 +219,11 @@ Live_Process = System_Info.live_process()
 for i in Live_Process:
     print(i)
 
+print("================================Access Log Data================================")
+data1, data2 = access_log_anal()
+print("URI")
+for a in data1:
+    print(a)
+print("Referer")
+for b in data2:
+    print(b)

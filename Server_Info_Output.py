@@ -1,4 +1,3 @@
-import enum
 import os
 import subprocess
 
@@ -61,6 +60,23 @@ class System_Info():
         #print(lastlog_result)
         
         return lastlog_result
+    def history():
+        history_list = subprocess.check_output("find /basic_parse/accounts/ -name 'history_*'",shell = True )
+        history_list = String_Cook(history_list)
+        history_list.remove('')
+        history_owner = []
+        history_command = []
+        #print(history_lists)
+        for i in history_list:
+            history_owner_splitlist = i.split('/')
+            history_owner.append(history_owner_splitlist[-1])
+        for e,v in enumerate(history_owner):
+            history_command2 = (subprocess.check_output("cat "+ history_list[e],shell=True))
+            history_command.append(String_Cook(history_command2))
+            
+
+        
+        return history_owner,history_command
 
 
     def netstat_anpt():
@@ -103,7 +119,7 @@ class System_Info():
         #print(crontab_result)
         ClontabRemark = []
         ClontabCommand = []
-        print(crontab_result)
+        #print(crontab_result)
         for word in crontab_result:
             if word.startswith('#'):
                 ClontabRemark.append(word) #ClonTab 주석 저장 
@@ -111,8 +127,8 @@ class System_Info():
                 ClontabCommand.append(word) #ClonTab 명령어 저장
             while '' in ClontabCommand:
                 ClontabCommand.remove('')
-        print(ClontabCommand)
-        print(ClontabRemark)
+        #print(ClontabCommand)
+        #print(ClontabRemark)
         return ClontabCommand, ClontabRemark
 
 System_Info.passwd()
@@ -199,7 +215,14 @@ for a in lastlog_result:
     print(a)
 
 print("Crontab 상태")
-print(ClontabCommand)
+print(ClontabCommand,"\n")
 
 print("History 로그")
+history_name , history_command =System_Info.history()
+for e,j in enumerate(history_name):
+    print("히스토리 계정 :"+ j)
+    for i in history_command[e]:
+        print(i)
+
+
 

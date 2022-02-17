@@ -98,7 +98,9 @@ def RecoverBash():  #RECOVER 파일
     os.system("tar -zcf /basic_parse/REC.tar RECOVERED_FILES")
 
 
-
+def RootKit_Check():
+    os.system("sudo apt-get install lynis -y")
+    os.system("sudo lynis --check-all -Q > /basic_parse/RootKit")
 
 accouts_parse()
 network_parse()
@@ -106,6 +108,7 @@ osinfo_parse()
 process_pasre()
 weblog_parse()
 RecoverBash()
+RootKit_Check()
 os.system("tar -cvf /basic_parse/var_log /var/log")
 os.system("tar -cvf /B_parse.tar /basic_parse")
 print("COMPLETE!!!!")

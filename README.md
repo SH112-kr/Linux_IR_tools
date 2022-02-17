@@ -86,13 +86,6 @@ apt list --installed ( automatic 문자열 제외)
 
 ```
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c94840c8-14f3-4583-9589-e855ce17b851/Untitled.png)
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/86f54431-aad8-474e-aa8b-a520c9714a98/Untitled.png)
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/53f3abfb-8ee0-401f-93c5-35ace78b10e4/Untitled.png)
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/beae9799-c788-42e5-9f9a-04b1316f48a0/Untitled.png)
 
 ### 2. 파싱
 

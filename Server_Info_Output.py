@@ -1,6 +1,6 @@
 import os
 import subprocess
-
+from tokenize import String
 
 
 
@@ -136,6 +136,24 @@ class System_Info():
         #print(ClontabCommand)
         #print(ClontabRemark)
         return ClontabCommand, ClontabRemark
+    def crontab2(): # Return [Clon 명령어],[Clon 주석 ]
+
+        crontab_result = subprocess.check_output('cat /basic_parse/process/crontab2',shell = True)
+        crontab_result = String_Cook(crontab_result)
+        #print(crontab_result)
+        ClontabRemark = []
+        ClontabCommand = []
+        #print(crontab_result)
+        for word in crontab_result:
+            if word.startswith('#'):
+                ClontabRemark.append(word) #ClonTab 주석 저장 
+            else:
+                ClontabCommand.append(word) #ClonTab 명령어 저장
+            while '' in ClontabCommand:
+                ClontabCommand.remove('')
+        #print(ClontabCommand)
+        #print(ClontabRemark)
+        return ClontabCommand, ClontabRemark
 
 System_Info.passwd()
 #System_Info.lastlog()
@@ -157,7 +175,7 @@ def Sys_log_anal():
     return Sys_log_data
 
 def auth_log_anal():
-    auth_log_data = subprocess.check_output("cat /basic_parse/accounts/auth_log | grep -a COMMAND= | awk '{print $1,$2,$3,$6,$10,$12,$14}'",shell = True)
+    auth_log_data = subprocess.check_output("cat /basic_parse/accounts/auth_log | grep -a COMMAND= ",shell = True)
     auth_log_data = String_Cook(auth_log_data)
     auth_log_data.remove('')
     return auth_log_data
@@ -168,6 +186,7 @@ User_UID = System_Info.passwd_result_UID,
 User_GID = System_Info.passwd_result_GID, 
 User_HomeDir = System_Info.passwd_result_homedir
 ClontabCommand, ClontabRemark = System_Info.crontab()
+ClontabCommand2, ClontabRemark2 = System_Info.crontab2()
 netstat_anpt = System_Info.netstat_anpt()
 lastlog_result = System_Info.lastlog()
 
@@ -216,7 +235,11 @@ for a in lastlog_result:
     print(a)
 
 print("================================Crontab 상태================================")
-print(ClontabCommand,"\n")
+
+for a in ClontabCommand:
+    print(a)
+for b in ClontabCommand2:
+    print(b)
 
 print("================================History 로그================================")
 history_name , history_command =System_Info.history()

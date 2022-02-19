@@ -151,7 +151,7 @@ def access_log_anal():
     return access_log_data1, access_log_data2
 
 def Sys_log_anal():
-    Sys_log_data = subprocess.check_output("cat /basic_parse/accounts/syslog | grep CMD |grep -ow '(.*)'",shell = True)
+    Sys_log_data = subprocess.check_output("cat /basic_parse/accounts/syslog | grep -a CMD |grep -ow '(.*)'",shell = True)
     Sys_log_data = String_Cook(Sys_log_data)
     Sys_log_data.remove('')
     return Sys_log_data

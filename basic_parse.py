@@ -2,8 +2,14 @@ import subprocess
 import os
 
 
+
+
 os.system("mkdir /basic_parse") #디렉토리 생성
 
+def String_Cook(row_string): 
+    row_string = row_string.decode('ascii')
+    cook_string = row_string.split("\n")
+    return cook_string
 
 def accouts_parse():
     os.system("mkdir /basic_parse/accounts") #디렉토리 생성
@@ -51,6 +57,7 @@ def osinfo_parse():
 def process_pasre(): #
     os.system("mkdir /basic_parse/process")
     os.system("crontab -l > /basic_parse/process/crontab")
+    os.system("cat /etc/crontab > /basic_parse/process/crontab2")
     os.system("ipcs -u > /basic_parse/process/ipcs_u")
     os.system("lsmod > /basic_parse/process/lsmod")
     os.system("ps -eaf > /basic_parse/process/ps_eaf")
@@ -97,18 +104,39 @@ def RecoverBash():  #RECOVER 파일
         os.system(ext)
     os.system("tar -zcf /basic_parse/REC.tar RECOVERED_FILES")
 
+def WebRootParse():
+        default_conf = subprocess.check_output('find / -name "000-default.conf"',shell=True)
+        default_conf = String_Cook(default_conf)
+        print(default_conf)
+        default_conf.remove('')
+        conf_path = default_conf[0]
+        print(conf_path)
+        conf_list = subprocess.check_output("cat {}".format(conf_path),shell=True)
+        conf_list = String_Cook(conf_list)
+        print(conf_list)
+        for conf_line in conf_list:
+                if 'DocumentRoot' in conf_line:
+                        conf_line = conf_line.split(' ')
+                        WebRoot = conf_line[-1]
+        
+        
+        return WebRoot
 
 def RootKit_Check():
-    os.system("sudo apt-get install lynis -y")
-    os.system("sudo lynis --check-all -Q > /basic_parse/RootKit")
+    #os.system("sudo apt-get install lynis -y")
+    os.system("cd /tmp/lynis")
+    os.system("sudo ./lynis --check-all -Q > /basic_parse/RootKit")
 
 accouts_parse()
 network_parse()
 osinfo_parse()
 process_pasre()
 weblog_parse()
-RecoverBash()
+#RecoverBash()
 RootKit_Check()
+WebRoot = WebRootParse()
+
+os.system("tar -cvf /basic_parse/Webroot "+ WebRoot)
 os.system("tar -cvf /basic_parse/var_log /var/log")
 os.system("tar -cvf /B_parse.tar /basic_parse")
 print("COMPLETE!!!!")

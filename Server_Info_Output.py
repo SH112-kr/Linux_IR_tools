@@ -160,7 +160,7 @@ System_Info.passwd()
 #System_Info.netstat_anpt()        
 
 def access_log_anal():
-    access_log_data1 = subprocess.check_output("cat /basic_parse/weblog/access_log | awk '{print $7}' | sort | uniq -c",shell = True)
+    access_log_data1 = subprocess.check_output("cat /basic_parse/weblog/access_log | awk '{print $7}' | sort | uniq -c",shell = True) #cmd grep 
     access_log_data1 = String_Cook(access_log_data1)
     access_log_data1.remove('')
     access_log_data2 = subprocess.check_output("cat /basic_parse/weblog/access_log | awk '{print $11}' | sort | uniq -c",shell = True)
